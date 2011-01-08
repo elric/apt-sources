@@ -1,0 +1,23 @@
+				   #### aptsources ####
+
+aptsources is a script for those who don't want or need a GUI to quickly modify
+source entries in files under 'sources.list.d/'.
+
+Usage: ./aptsources.sh [-e -s -d -a -r] [repository filename]
+       -lp [ppa:user/ppa-name  ubuntu-codename] -l -h;'
+
+Only one option can be specified at a time.
+Omit '.list' extension in filename/repository name.
+
+-e,  --enable      enable repository, only 'deb' line'
+-s,  --src         enable repository, 'deb-src' and 'deb' lines'
+-d,  --disable     disable repository'
+-a,  --add         add repository'
+-r,  --remove      remove repository'
+-lp, --add-lp      add launchpad repository and fetch key'
+-l,  --list        list repositories and status'
+-h,  --help        this message'
+
+Basically, it comments and uncomments deb or deb and deb-src lines for the
+specified repository/filename, but it also shows the status of the repository
+(enabled or disabled), or adds new repositories, as well as removing them.
