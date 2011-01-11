@@ -16,9 +16,8 @@
 #       [1] http://blog.anantshri.info/howto-add-ppa-in-debian/    
 #===============================================================================
 
-# TODO: Only one argument a time is allowed
+# TODO: Only one argument a time is allowed, update_pacakges () would benefit
 # check if already enabled or disabled
-# give option to apt-get update after command
 # autoinstall's sed can be nicer
 
 # check_lines doesn't work with -d because grep doesn't tell if one
@@ -209,6 +208,27 @@ list_sources () {
     echo -e "\033[1mEnabled:\033[0m$sources_enabled\n\033[1mDisabled:\033[0m$sources_disabled"
 }
 
+## Update packages at user request.
+
+update_packages_list () {
+    echo "Would you like to update the list of packages? [y/n]"
+    read ans
+
+    if [ $ans = y -o $ans = Y -o $ans = yes -o $ans = Yes -o $ans = YES ] ; then
+    which aptitude  &>/dev/null 
+        # Checks aptitude is installed (Ubuntu will stop doing it...)
+        if [ $? == 0 ] ; then 
+            aptitude update
+        else
+            apt-get update
+        fi
+    fi
+
+    if [ $ans = n -o $ans = N -o $ans = no -o $ans = No -o $ans = NO ] ; then
+    exit 1
+    fi
+}
+
 ### Autoinstall, + or - copy itself to /usr/local/bin. Sed comments lines in help() and "case $1 in"
 ## during the process. It also comments... itself (string below)
 autoinstall () {
@@ -226,10 +246,10 @@ if [ ! -n "$1" ] ; then  # Show usage if no parameter is given
     exit 1
 else
     case $1 in
-        -e|--enable)        check_root;check_repos "$@";enable_bin_repo;;
-        -s|--src)           check_root;check_repos "$@";enable_binsrc_repo;;
-        -d|--disable)       check_root;check_repos "$@";disable_repo;;
-        -a|--add)           check_root;add_repo "$@";;
+        -e|--enable)        check_root;check_repos "$@";enable_bin_repo;update_packages_list;;
+        -s|--src)           check_root;check_repos "$@";enable_binsrc_repo;update_packages_list;;
+        -d|--disable)       check_root;check_repos "$@";disable_repo;update_packages_list;;
+        -a|--add)           check_root;add_repo "$@";update_packages_list;;
         -lp|--add-lp)       check_root;add_lp_repo "$@";;
         -r|--remove)        check_root;check_repos "$@";remove_repo;;
         -l|--list)          list_sources;;
