@@ -21,3 +21,5 @@ Omit '.list' extension in filename/repository name.
 Basically, it comments and uncomments deb or deb and deb-src lines for the
 specified repository/filename, but it also shows the status of the repository
 (enabled or disabled), or adds new repositories, as well as removing them.
+
+To install system-wide, first do 'chmod +x aptsources.sh', and then you can either copy the file to /usr/local/bin, or create a link pointing to the location of the script.
