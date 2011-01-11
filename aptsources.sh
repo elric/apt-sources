@@ -67,6 +67,7 @@ check_repos () {
 
     local temp_repos="$@" # get the remnants
     local repo
+    local failed
 
     # Check existence of repos/files, and load in vars
     for repo in $temp_repos; do
@@ -187,6 +188,10 @@ remove_repo () {
 
 list_sources () {
     local sources
+    local file
+    local sources_enabled
+    local sources_disabled
+
     sources=$(ls -o -g /etc/apt/sources.list.d/| grep '.list$' | awk '{print $7}' | sed 's/.list/\ /g')
 
     for file in $sources ; do
