@@ -241,14 +241,15 @@ autoinstall () {
 # Parse $@ and leave the remaining args to each function,
 # if required
 
+act () {
 if [ ! -n "$1" ] ; then  # Show usage if no parameter is given
     help_message
     exit 1
 else
-    case $1 in
-        -e|--enable)        check_root;check_repos "$@";enable_bin_repo;update_packages_list;;
-        -s|--src)           check_root;check_repos "$@";enable_binsrc_repo;update_packages_list;;
-        -d|--disable)       check_root;check_repos "$@";disable_repo;update_packages_list;;
+    case $1 in 
+        -e|--enable)        check_root;check_repos "$@";enable_bin_repo;;
+        -s|--src)           check_root;check_repos "$@";enable_binsrc_repo;;
+        -d|--disable)       check_root;check_repos "$@";disable_repo;;
         -a|--add)           check_root;add_repo "$@";update_packages_list;;
         -lp|--add-lp)       check_root;add_lp_repo "$@";;
         -r|--remove)        check_root;check_repos "$@";remove_repo;;
@@ -258,3 +259,59 @@ else
         -*|--*)             echo "The option '$1' doesn't exist";;
     esac
 fi
+}
+
+#strings=$(echo $IN) | sed 's/-/\n/'
+#
+#for i in $strings ; do
+#    echo $i
+#done
+
+#for i in $strings
+#do
+#  echo $i
+#done
+
+#IN=($@)
+#IFS='-' read -ra ADDR <<< $IN
+#for i in "${ADDR[@]}"; do 
+#     echo -$i
+#done
+
+#declare -a IN
+#
+#IN=(`echo "$@" | tr '-' '\n'`)
+#
+#echo ${IN[@]}
+#OIFS="$IFS"
+#IFS='-'
+#arr2=($IN)
+#IFS=$OIFS
+#for x in ${arr2[@]}
+#do
+#    echo -$x
+#done
+
+#IN="$@"
+#while IN='-' read -ra ADDR; do 
+#      for i in ${ADDR[@]}; do
+#           echo -$i
+#      done 
+#done <<< $IN
+
+#user_input="$@"
+#set -- $user_input
+#separator='-'
+#splitted_lines=($user_input)
+#for x in ${user_input[@]}
+#do
+#     echo "$x"
+#done
+
+
+IN="$@"
+set -- "$IN"
+IFS="-"; declare -a Array=($*)
+for x in ${Array[@]} ; do
+    act $x
+done
