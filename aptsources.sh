@@ -19,6 +19,7 @@
 # TODO: Only one argument a time is allowed
 # check if already enabled or disabled
 # give option to apt-get update after command
+# autoinstall's sed can be nicer
 
 # check_lines doesn't work with -d because grep doesn't tell if one
 # or both lines are commented. Therefore, -d fails because a repo
@@ -42,6 +43,7 @@ echo '-a,  --add         add repository';
 echo '-r,  --remove      remove repository';
 echo '-lp, --add-lp      add launchpad repository and fetch key';
 echo '-l,  --list        list repositories and status';
+echo '-i,  --autoinstall install script system-wide to /usr/local/bin/';
 echo '-h,  --help        this message';
 exit 1
 }
@@ -207,6 +209,14 @@ list_sources () {
     echo -e "\033[1mEnabled:\033[0m$sources_enabled\n\033[1mDisabled:\033[0m$sources_disabled"
 }
 
+### Autoinstall, + or - copy itself to /usr/local/bin. Sed comments lines in help() and "case $1 in"
+## during the process. It also comments... itself (string below)
+autoinstall () {
+    cat $0 | sed 's/-i|--autoinstall/#-i|--autoinstall/' | sed '/install script system/s%^%#%' > /tmp/aptsources
+    install -o root -m 755 -g staff -D  /tmp/aptsources /usr/local/bin/aptsources
+    rm /tmp/aptsources
+    echo "Done"
+}
 
 # Parse $@ and leave the remaining args to each function,
 # if required
@@ -216,14 +226,15 @@ if [ ! -n "$1" ] ; then  # Show usage if no parameter is given
     exit 1
 else
     case $1 in
-        -e|--enable)    check_root;check_repos "$@";enable_bin_repo;;
-        -s|--src)       check_root;check_repos "$@";enable_binsrc_repo;;
-        -d|--disable)   check_root;check_repos "$@";disable_repo;;
-        -a|--add)       check_root;add_repo "$@";;
-        -lp|--add-lp)   check_root;add_lp_repo "$@";;
-        -r|--remove)    check_root;check_repos "$@";remove_repo;;
-        -l|--list)      list_sources;;
-        -h|--help)      help_message;;
-        -*|--*)         echo "The option '$1' doesn't exist";;
+        -e|--enable)        check_root;check_repos "$@";enable_bin_repo;;
+        -s|--src)           check_root;check_repos "$@";enable_binsrc_repo;;
+        -d|--disable)       check_root;check_repos "$@";disable_repo;;
+        -a|--add)           check_root;add_repo "$@";;
+        -lp|--add-lp)       check_root;add_lp_repo "$@";;
+        -r|--remove)        check_root;check_repos "$@";remove_repo;;
+        -l|--list)          list_sources;;
+        -i|--autoinstall)   check_root;autoinstall;;
+        -h|--help)          help_message;;
+        -*|--*)             echo "The option '$1' doesn't exist";;
     esac
 fi
