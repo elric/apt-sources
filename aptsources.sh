@@ -19,6 +19,7 @@
 # TODO: Only one argument a time is allowed, update_pacakges () would benefit
 # check if already enabled or disabled
 # autoinstall's sed can be nicer
+# check proper bash script logging | output
 
 # check_lines doesn't work with -d because grep doesn't tell if one
 # or both lines are commented. Therefore, -d fails because a repo
