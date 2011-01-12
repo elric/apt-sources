@@ -196,7 +196,7 @@ list_sources () {
     sources=$(ls -o -g /etc/apt/sources.list.d/| grep '.list$' | awk '{print $7}' | sed 's/.list/\ /g')
 
     for file in $sources ; do
-        grep '^ *deb' /etc/apt/sources.list.d/"$file".list >> /dev/null
+        grep '^ *deb' /etc/apt/sources.list.d/"$file".list &>/dev/null
 
         if [ $? == 0 ] ; then
             sources_enabled="$sources_enabled $file"; # holds files with uncommented lines
@@ -216,7 +216,7 @@ update_packages_list () {
 
     if [ $ans = y -o $ans = Y -o $ans = yes -o $ans = Yes -o $ans = YES ] ; then
     which aptitude  &>/dev/null 
-        # Checks aptitude is installed (Ubuntu will stop doing it...)
+        # Checks aptitude is installed (Ubuntu will stop including it...)
         if [ $? == 0 ] ; then 
             aptitude update
         else
@@ -309,9 +309,19 @@ fi
 #done
 
 
-IN="$@"
-set -- "$IN"
-IFS="-"; declare -a Array=($*)
-for x in ${Array[@]} ; do
-    act $x
-done
+#IN="$@"
+#set -- "$IN"
+#IFS="-"; declare -a Array=($*)
+#for x in ${Array[@]} ; do
+#    act $x
+#done
+
+#
+#
+#IN="$@"
+#arr2=($(echo $IN | sed 's/-/\n-/g'))
+#for x in ${arr2[@]}
+#do
+#    echo $x
+#done
+
