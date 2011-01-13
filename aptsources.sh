@@ -4,6 +4,7 @@
 #          FILE:  aptsources.sh
 # 
 #         USAGE: ./aptsources.sh -h
+#                Check function help_message () below.
 # 
 #   DESCRIPTION: A script to administrate repositories configured
 #                under /etc/apt/sources.list.d
@@ -42,10 +43,13 @@ echo '-s,  --src         enable repository, 'deb-src' and 'deb' lines';
 echo '-d,  --disable     disable repository';
 echo '-a,  --add         add repository';
 echo '-r,  --remove      remove repository';
-echo '-lp, --add-lp      add launchpad repository and fetch key';
 echo '-l,  --list        list repositories and status';
 echo '-i,  --autoinstall install script system-wide to /usr/local/bin/';
 echo '-h,  --help        this message';
+echo '';
+echo 'Launchpad repositories only';
+echo '-lp, --add-lp      add launchpad repository and fetch key';
+echo '';
 exit 1
 }
 
@@ -72,12 +76,13 @@ check_repos () {
     local repo
     local failed
 
-    # Check existence of repos/files, and load in vars
+    # Check existence of repos/files, and load in $repos if
+    # affirmative
     for repo in $temp_repos; do
-        if [ ! -e /etc/apt/sources.list.d/$repo.list ] ; then
-            failed="$failed $repo"
-        else
+        if [ -e /etc/apt/sources.list.d/$repo.list ] ; then
             repos="$repos $repo"            
+        else
+            failed="$failed $repo"
         fi
     done
     
@@ -90,6 +95,7 @@ check_repos () {
 
 
 #### Enable repositories
+## They just take the files in $repos, and act upon them with 'sed'
 
 ## Only binary
 enable_bin_repo () {
@@ -160,7 +166,7 @@ add_lp_repo () {
     repo_filename=$(echo $ppa_name | sed 's/\// /' | awk '{print $1}')
     ubuntu_distribution="$2"
 
-    if [ -z "$ppa_name" ] ; then  # Check correctness of $1
+    if [ -z "$ppa_name" ] ; then  # Check correctness of ppa-name
         echo "PPA name not found or incorrect"
     else
     echo -e "Adding $ppa_name and updating Packages lists, this will take some time..." 
@@ -201,7 +207,8 @@ list_sources () {
         grep '^ *deb' /etc/apt/sources.list.d/"$file".list >> /dev/null
 
         if [ $? == 0 ] ; then
-            sources_enabled="$sources_enabled $file"; # holds files with uncommented lines
+            sources_enabled="$sources_enabled $file"; # holds files with uncommented 
+                                                      # lines
         else
             sources_disabled="$sources_disabled $file"; # the opposite
         fi
@@ -210,8 +217,8 @@ list_sources () {
     echo -e "\033[1mEnabled:\033[0m$sources_enabled\n\033[1mDisabled:\033[0m$sources_disabled"
 }
 
-### Autoinstall, + or - copy itself to /usr/local/bin. Sed comments lines in help() and "case $1 in"
-## during the process. It also comments... itself (string below)
+### Autoinstall, + or - copy itself to /usr/local/bin. Sed comments lines in help() 
+# and "case $1 in" during the process. It also comments... itself (string below)
 autoinstall () {
     cat $0 | sed 's/-i|--autoinstall/#-i|--autoinstall/' | sed '/install script system/s%^%#%' > /tmp/aptsources
     install -o root -m 755 -g staff -D  /tmp/aptsources /usr/local/bin/aptsources
