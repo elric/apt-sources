@@ -53,14 +53,15 @@ echo '';
 exit 1
 }
 
-# Check that the user runs as root
 check_root () {
-    if [[ $EUID -ne 0 ]]; then
-        echo "You need administrative privileges" 2>&1
-        exit 1
-    fi
-}
 
+  if [ ! $( id -u ) -eq 0 ]; then
+    echo "Please enter root's password."
+    exec su -c "${0} ${CMDLN_ARGS}" # Call this prog as root
+    exit ${?}  # sice we're 'execing' above, we wont reach this exit
+               # unless something goes wrong.
+  fi
+}
 
 ### Creates $repos for --enable --src n --disable, infering which
 # files don't exist
@@ -133,6 +134,7 @@ disable_repo () {
 ### Add repo
 
 # just spawns an editor...
+
 add_repo () {
     shift ##  we take $@ and shift it to get the reponame (the arg)
     if [ ! -n "$1"  ] ; then
@@ -149,10 +151,12 @@ add_repo () {
 }
 
 ### adds a launchpad ppa and fetches key
+
 add_lp_repo () {
     shift
 
     # Check # of args
+
     if [ $# != 2 ]; then
         echo "This parameter requires two arguments: 'ppa:user/ppa-name' and 'Ubuntu codename'"
         echo "Select the one closest to your system."
@@ -219,12 +223,18 @@ list_sources () {
 
 ### Autoinstall, + or - copy itself to /usr/local/bin. Sed comments lines in help() 
 # and "case $1 in" during the process. It also comments... itself (string below)
+
 autoinstall () {
     cat $0 | sed 's/-i|--autoinstall/#-i|--autoinstall/' | sed '/install script system/s%^%#%' > /tmp/aptsources
     install -o root -m 755 -g staff -D  /tmp/aptsources /usr/local/bin/aptsources
     rm /tmp/aptsources
     echo "Done"
 }
+
+
+CMDLN_ARGS="$@"           # Command line arguments for this script, this value is
+export CMDLN_ARGS         # used by check_root (). This needs to be set before the case
+                          # block so su can rerun the script with the same args.
 
 # Parse $@ and leave the remaining args to each function,
 # if required
@@ -246,3 +256,4 @@ else
         -*|--*)             echo "The option '$1' doesn't exist";;
     esac
 fi
+
