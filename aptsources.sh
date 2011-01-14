@@ -261,17 +261,6 @@ else
 fi
 }
 
-#strings=$(echo $IN) | sed 's/-/\n/'
-#
-#for i in $strings ; do
-#    echo $i
-#done
-
-#for i in $strings
-#do
-#  echo $i
-#done
-
 #IN=($@)
 #IFS='-' read -ra ADDR <<< $IN
 #for i in "${ADDR[@]}"; do 
