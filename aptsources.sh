@@ -11,7 +11,7 @@
 #
 #        AUTHOR: Omar Campagne
 #       CREATED: 07/01/11 17:16:35 CET
-#       VERSION: 0.3
+#       VERSION: 0.4
 #
 #       Credits to Anant Shirvastava [1], add_lp_repo() is his.
 #       [1] http://blog.anantshri.info/howto-add-ppa-in-debian/    
@@ -27,6 +27,10 @@
 # or both lines are commented. Therefore, -d fails because a repo
 # counts as $sources_enabled when only the deb line is uncommented.
 # I need 3 states, enabledbin, enabledsrc and disabled, or sthg like that.
+
+#-------------------------------------------------------------------------------
+# Functions
+#-------------------------------------------------------------------------------
 
 help_message () { 
 echo 'aptsources is a script to enable, disable and add external repositories';
@@ -53,27 +57,17 @@ echo '';
 exit 1
 }
 
-check_root () {
-
-  if [ ! $( id -u ) -eq 0 ]; then
-    echo "Please enter root's password."
-    exec su -c "${0} ${CMDLN_ARGS}" # Call this prog as root
-    exit ${?}  # sice we're 'execing' above, we wont reach this exit
-               # unless something goes wrong.
-  fi
-}
-
 ### Creates $repos for --enable --src n --disable, infering which
 # files don't exist
 
 check_repos () {
-    shift # move $@ to the left
-    if [ ! -n "$1"  ] ; then # check args are given
+    shift                                       # move $@ to the left
+    if [ ! -n "$1"  ] ; then                    # check args are given
         echo "No repositories have been specified"
         exit 1
     fi
 
-    local temp_repos="$@" # get the remnants
+    local temp_repos="$@"                       # get the remnants
     local repo
     local failed
 
@@ -136,7 +130,7 @@ disable_repo () {
 # just spawns an editor...
 
 add_repo () {
-    shift ##  we take $@ and shift it to get the reponame (the arg)
+    shift                     ##  we take $@ and shift it to get the reponame (the arg)
     if [ ! -n "$1"  ] ; then
         echo "No filename or repository name specified"
         exit 1
@@ -162,15 +156,15 @@ add_lp_repo () {
         echo "Select the one closest to your system."
     fi
 
-    local ppa_name # 1st argument
-    local repo_filename # stripped from 1st arg
-    local ubuntu_distribution # 2nd argument
+    local ppa_name                              # 1st argument
+    local repo_filename                         # stripped from 1st arg
+    local ubuntu_distribution                   # 2nd argument
 
     ppa_name=$(echo "$1" | cut -d":" -f2 -s) 
     repo_filename=$(echo $ppa_name | sed 's/\// /' | awk '{print $1}')
     ubuntu_distribution="$2"
 
-    if [ -z "$ppa_name" ] ; then  # Check correctness of ppa-name
+    if [ -z "$ppa_name" ] ; then                # Check correctness of ppa-name
         echo "PPA name not found or incorrect"
     else
     echo -e "Adding $ppa_name and updating Packages lists, this will take some time..." 
@@ -211,10 +205,10 @@ list_sources () {
         grep '^ *deb' /etc/apt/sources.list.d/"$file".list >> /dev/null
 
         if [ $? == 0 ] ; then
-            sources_enabled="$sources_enabled $file"; # holds files with uncommented 
-                                                      # lines
+            sources_enabled="$sources_enabled $file";    # holds files with uncommented 
+                                                         # lines
         else
-            sources_disabled="$sources_disabled $file"; # the opposite
+            sources_disabled="$sources_disabled $file";  # the opposite
         fi
     done
 
@@ -231,15 +225,28 @@ autoinstall () {
     echo "Done"
 }
 
+check_root () {
 
-CMDLN_ARGS="$@"           # Command line arguments for this script, this value is
-export CMDLN_ARGS         # used by check_root (). This needs to be set before the case
-                          # block so su can rerun the script with the same args.
+    if [ ! $( id -u ) -eq 0 ]; then
+       echo "Please enter root's password."
+       exec su -c "${0} ${CMDLN_ARGS}"         # Call this prog as root
+       exit ${?}                               # since we're 'execing' above, we wont reach
+    fi                                         # this exit unless something goes wrong.
+    
+}                                                                     
+
+#-------------------------------------------------------------------------------
+#  "Initialization" starts here
+#-------------------------------------------------------------------------------
+
+CMDLN_ARGS="$@"               # Command line arguments for this script, this value is
+export CMDLN_ARGS             # used by check_root (). This needs to be set before the 
+                              # case block so su can rerun the script with the same args
 
 # Parse $@ and leave the remaining args to each function,
 # if required
 
-if [ ! -n "$1" ] ; then  # Show usage if no parameter is given
+if [ ! -n "$1" ] ; then                         # Show usage if no parameter is given
     help_message
     exit 1
 else
@@ -256,4 +263,3 @@ else
         -*|--*)             echo "The option '$1' doesn't exist";;
     esac
 fi
-
