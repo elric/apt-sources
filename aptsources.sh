@@ -17,11 +17,11 @@
 #       [1] http://blog.anantshri.info/howto-add-ppa-in-debian/    
 #===============================================================================
 
-# TODO: Only one argument a time is allowed
-# check if already enabled or disabled
-# give option to apt-get update after command
-# autoinstall's sed can be nicer
-# check proper bash script logging | output
+# TODO: Only one argument a time is allowed check if already enabled or
+# disabled give option to apt-get update after command autoinstall's sed can be
+# nicer check proper bash script logging | output -lp. apt-get update is used
+# to get the key, and another upd is necessary. so use wget from the other
+# script
 
 # check_lines doesn't work with -d because grep doesn't tell if one
 # or both lines are commented. Therefore, -d fails because a repo
@@ -52,7 +52,7 @@ echo '-i,  --autoinstall install script system-wide to /usr/local/bin/';
 echo '-h,  --help        this message';
 echo '';
 echo 'Launchpad repositories only';
-echo '-lp, --add-lp      add launchpad repository and fetch key';
+echo '-alp, --add-launchpad      add launchpad repository and fetch key';
 echo '';
 exit 1
 }
@@ -168,7 +168,7 @@ add_lp_repo () {
         echo "PPA name not found or incorrect"
     else
     echo -e "Adding $ppa_name and updating Packages lists, this will take some time..." 
-    echo "deb http://ppa.launchpad.net/$ppa_name/ubuntu $ubuntu_distribution main" >> \
+    echo -e "deb http://ppa.launchpad.net/$ppa_name/ubuntu $ubuntu_distribution main\ndeb-src http://ppa.launchpad.net/$ppa_name/ubuntu $ubuntu_distribution main" >> \
          /etc/apt/sources.list.d/$repo_filename.list;
          apt-get update >> /dev/null 2> /tmp/apt_add_key.txt;
          key=`cat /tmp/apt_add_key.txt | cut -d":" -f6 | cut -d" " -f3`;
@@ -255,7 +255,7 @@ else
         -s|--src)           check_root;check_repos "$@";enable_binsrc_repo;;
         -d|--disable)       check_root;check_repos "$@";disable_repo;;
         -a|--add)           check_root;add_repo "$@";;
-        -lp|--add-lp)       check_root;add_lp_repo "$@";;
+        -alp|--add-launchpad)    check_root;add_lp_repo "$@";;
         -r|--remove)        check_root;check_repos "$@";remove_repo;;
         -l|--list)          list_sources;;
         -i|--autoinstall)   check_root;autoinstall;;
