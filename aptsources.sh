@@ -17,16 +17,19 @@
 #       [1] http://blog.anantshri.info/howto-add-ppa-in-debian/    
 #===============================================================================
 
-# TODO: Only one argument a time is allowed check if already enabled or
-# disabled give option to apt-get update after command autoinstall's sed can be
-# nicer check proper bash script logging | output -lp. apt-get update is used
-# to get the key, and another upd is necessary. so use wget from the other
-# script
+# TODO: Only one argument a time is allowed
+# check if already enabled or disabled
+# give option to apt-get update after command
+# autoinstall's sed can be nicer
+# check proper bash script logging | output
+# -lp: apt-get update is used to get the key, and another upd is 
+# necessary. so use wget from the other script 
+# bash autocompletion
 
-# check_lines doesn't work with -d because grep doesn't tell if one
-# or both lines are commented. Therefore, -d fails because a repo
-# counts as $sources_enabled when only the deb line is uncommented.
-# I need 3 states, enabledbin, enabledsrc and disabled, or sthg like that.
+# check_lines doesn't work with -d because grep doesn't tell if one or both
+# lines are commented. Therefore, -d fails because a repo counts as
+# $sources_enabled when only the deb line is uncommented.  I need 3 states,
+# enabledbin, enabledsrc and disabled, or sthg like that.
 
 #-------------------------------------------------------------------------------
 # Functions
@@ -68,8 +71,7 @@ check_repos () {
     fi
 
     local temp_repos="$@"                       # get the remnants
-    local repo
-    local failed
+    local repo failed
 
     # Check existence of repos/files, and load in $repos if
     # affirmative
@@ -194,10 +196,7 @@ remove_repo () {
 ## Shows sources.list.d/* and status (commented or uncommented deb lines)
 
 list_sources () {
-    local sources
-    local file
-    local sources_enabled
-    local sources_disabled
+    local sources file sources_enabled sources_disabled
 
     sources=$(ls -o -g /etc/apt/sources.list.d/| grep '.list$' | awk '{print $7}' | sed 's/.list/\ /g')
 
