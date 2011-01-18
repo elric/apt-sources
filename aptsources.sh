@@ -266,36 +266,20 @@ fi
 #for i in "${ADDR[@]}"; do 
 #     echo -$i
 #done
-
-#declare -a IN
 #
-#IN=(`echo "$@" | tr '-' '\n'`)
 #
-#echo ${IN[@]}
-#OIFS="$IFS"
-#IFS='-'
-#arr2=($IN)
-#IFS=$OIFS
-#for x in ${arr2[@]}
-#do
-#    echo -$x
-#done
+IN="$@"
 
-#IN="$@"
-#while IN='-' read -ra ADDR; do 
-#      for i in ${ADDR[@]}; do
-#           echo -$i
-#      done 
-#done <<< $IN
+OIFS="$IFS"
+IFS='-'
+arr2=($IN)
+for x in ${arr2[@]}
+do
+    echo $x
+done
+    IFS=$OIFS
 
-#user_input="$@"
-#set -- $user_input
-#separator='-'
-#splitted_lines=($user_input)
-#for x in ${user_input[@]}
-#do
-#     echo "$x"
-#done
+
 
 
 #IN="$@"
@@ -305,11 +289,11 @@ fi
 #    act $x
 #done
 
-#
-#
+
+
 #IN="$@"
-#arr2=($(echo $IN | sed 's/-/\n-/g'))
-#for x in ${arr2[@]}
+#arr=$(echo $IN |  tr "-" "\n\-")
+#for x in ${arr[@]}
 #do
 #    echo $x
 #done
