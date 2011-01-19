@@ -48,6 +48,7 @@ echo '';
 echo '-e,  --enable      enable repository, only 'deb' line';
 echo '-s,  --src         enable repository, 'deb-src' and 'deb' lines';
 echo '-d,  --disable     disable repository';
+echo '-sh, --show-source show contents in source file';
 echo '-a,  --add         add repository';
 echo '-r,  --remove      remove repository';
 echo '-l,  --list        list repositories and status';
@@ -214,6 +215,13 @@ list_sources () {
     echo -e "\033[1mEnabled:\033[0m$sources_enabled\n\033[1mDisabled:\033[0m$sources_disabled"
 }
 
+show_source () {
+    local repo
+    for repo in $repos; do
+        cat /etc/apt/sources.list.d/"$repo".list
+    done
+}
+
 ### Autoinstall, + or - copy itself to /usr/local/bin. Sed comments lines in help() 
 # and "case $1 in" during the process. It also comments... itself (string below)
 
@@ -256,8 +264,9 @@ else
         -a|--add)           check_root;add_repo "$@";;
         -alp|--add-launchpad)    check_root;add_lp_repo "$@";;
         -r|--remove)        check_root;check_repos "$@";remove_repo;;
-        -l|--list)          list_sources;;
+        -sh|--show-source)  check_repos "$@";show_source;;
         -i|--autoinstall)   check_root;autoinstall;;
+        -l|--list)          list_sources;;
         -h|--help)          help_message;;
         -*|--*)             echo "The option '$1' doesn't exist";;
     esac
