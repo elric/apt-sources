@@ -25,8 +25,8 @@ help_message () {
 echo 'aptsources is a script to enable, disable and add external repositories';
 echo 'under `/etc/apt/sources.list.d/`';
 echo '';
-echo 'Usage: ./aptsources.sh [-e -s -d -a -r] [repository filename]';
-echo '       -lp [ppa:user/ppa-name  ubuntu-codename] -l -h;'
+echo 'Usage: ./aptsources.sh [-e -s -d -sh -a -r] [repository filename]';
+echo '       -alp [ppa:user/ppa-name ubuntu-codename] -l -h;'
 echo '';
 echo 'Only one option can be specified at a time.';
 echo 'Omit '.list' extension in filename/repository name.';
