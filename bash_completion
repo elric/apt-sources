@@ -24,21 +24,20 @@ _aptsources ()
     
     # Options to show
 
-    opts="-e -d -s -sh -a -r -alp -h -l --enable --disable --src --show-source \
-    	 --add --remove --add-launchpad --help --list"
+    opts="--enable --disable --src --show-source --add --remove --add-launchpad --help --list"
     
     ## If the introduced command is one of the following, keep on completing
     ## sources
 
     case "${COMP_WORDS[1]}" in
 	--enable|-e)
-            COMPREPLY=( $(compgen -W "${sources_disabled}" -- ${command}))
+            COMPREPLY=( $(compgen -W "${sources_disabled}" -- "${command}"))
             return 0;;
 	--disable|-d)
-	    COMPREPLY=( $(compgen -W "${sources_enabled}" -- ${command}))
+	    COMPREPLY=( $(compgen -W "${sources_enabled}" -- "${command}"))
             return 0;;
 	--src|-s|--show-source|-sh|--remove|-r)
-	    COMPREPLY=( $(compgen -W "${sources}" -- ${command}))
+	    COMPREPLY=( $(compgen -W "${sources}" -- "${command}"))
             return 0;;
         --help|-h|--list|-l|--add|-a|--add-launchpad|-alp) ## These don't return anything
             return 0;;
@@ -47,11 +46,10 @@ _aptsources ()
     # If no option is specified show all options
 
     if [[ ${command} = * ]]; then
-        COMPREPLY=( $(compgen -W "${opts}" -- ${command}) )
+        COMPREPLY=( $( compgen -W "${opts}" -- "${command}" ) )
         return 0
     fi
 }
 
 sources
-
 complete -F _aptsources aptsources
