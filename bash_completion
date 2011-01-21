@@ -1,7 +1,7 @@
 ##  Bash completion file for aptsources
 sources () 
 {
-    sources=$( ls -o -g /etc/apt/sources.list.d/| grep '.list$' | awk '{print $7}' | sed 's/.list/\ /g' )
+    local sources=$( ls -o -g /etc/apt/sources.list.d/| grep '.list$' | awk '{print $7}' | sed 's/.list/\ /g' )
 
     for file in $sources ; do
         grep '^ *deb' /etc/apt/sources.list.d/"$file".list >> /dev/null
@@ -31,10 +31,14 @@ _aptsources ()
 
     case "${COMP_WORDS[1]}" in
 	--enable|-e)
+	    sources
             COMPREPLY=( $(compgen -W "${sources_disabled}" -- "${command}"))
+	unset sources_disabled sources_enabled
             return 0;;
 	--disable|-d)
+	    sources
 	    COMPREPLY=( $(compgen -W "${sources_enabled}" -- "${command}"))
+	unset sources_disabled sources_enabled
             return 0;;
 	--src|-s|--show-source|-sh|--remove|-r)
 	    COMPREPLY=( $(compgen -W "${sources}" -- "${command}"))
@@ -42,7 +46,6 @@ _aptsources ()
         --help|-h|--list|-l|--add|-a|--add-launchpad|-alp) ## These don't return anything
             return 0;;
     esac
-
     # If no option is specified show all options
 
     if [[ ${command} = * ]]; then
