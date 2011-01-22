@@ -182,26 +182,26 @@ remove_repo () {
 
 ## Shows sources.list.d/* and status (commented or uncommented deb lines)
 
-list_sources () {
-    local sources file sources_enabled sources_disabled
+list_repos () {
+    local repos repo repos_enabled repos_disabled
 
-    sources=$(ls -o -g /etc/apt/sources.list.d/| grep '.list$' | awk '{print $7}' | sed 's/.list/\ /g')
+    repos=$(ls -o -g /etc/apt/sources.list.d/| grep '.list$' | awk '{print $7}' | sed 's/.list/\ /g')
 
-    for file in $sources ; do
-        grep '^ *deb' /etc/apt/sources.list.d/"$file".list >> /dev/null
+    for repo in $repos ; do
+        grep '^ *deb' /etc/apt/sources.list.d/"$repo".list >> /dev/null
 
         if [ $? == 0 ] ; then
-            sources_enabled="$sources_enabled $file";    # holds files with uncommented 
+            repos_enabled="$repos_enabled $repo";    # holds files with uncommented 
                                                          # lines
         else
-            sources_disabled="$sources_disabled $file";  # the opposite
+            repos_disabled="$repos_disabled $repo";  # the opposite
         fi
     done
 
     echo -e "\033[1mEnabled:\033[0m$sources_enabled\n\033[1mDisabled:\033[0m$sources_disabled"
 }
 
-show_source () {
+show_repos () {
     local repo
     for repo in $repos; do
         cat /etc/apt/sources.list.d/"$repo".list
@@ -250,9 +250,9 @@ else
         -a|--add)           check_root;add_repo "$@";;
         -alp|--add-launchpad)    check_root;add_lp_repo "$@";;
         -r|--remove)        check_root;check_repos "$@";remove_repo;;
-        -sh|--show-source)  check_repos "$@";show_source;;
+        -sh|--show-source)  check_repos "$@";show_repos;;
         -i|--autoinstall)   check_root;autoinstall;;
-        -l|--list)          list_sources;;
+        -l|--list)          list_repos;;
         -h|--help)          help_message;;
         -*|--*)             echo "The option '$1' doesn't exist";;
     esac

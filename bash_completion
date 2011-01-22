@@ -1,16 +1,17 @@
-##  Bash completion file for aptsources
-sources () 
-{
-    local sources=$( ls -o -g /etc/apt/sources.list.d/| grep '.list$' | awk '{print $7}' | sed 's/.list/\ /g' )
+##  Bash comletion file for aptsources
+repos () 
+{	
+    local repo repos
+    repos=$( ls -o -g /etc/apt/sources.list.d/| grep '.list$' | awk '{print $7}' | sed 's/.list/\ /g' )
 
-    for file in $sources ; do
-        grep '^ *deb' /etc/apt/sources.list.d/"$file".list >> /dev/null
+    for repo in $repos ; do
+        grep '^ *deb' /etc/apt/sources.list.d/"$repo".list >> /dev/null
 
         if [ $? == 0 ] ; then
-            sources_enabled="$sources_enabled $file";    # holds files with uncommented 
+            repos_enabled="$repos_enabled $repo";    # holds files with uncommented 
                                                          # lines
         else
-            sources_disabled="$sources_disabled $file";  # the opposite
+            repos_disabled="$repos_disabled $repo";  # the opposite
         fi
     done
 }
@@ -31,17 +32,17 @@ _aptsources ()
 
     case "${COMP_WORDS[1]}" in
 	--enable|-e)
-	    sources
-            COMPREPLY=( $(compgen -W "${sources_disabled}" -- "${command}"))
-	unset sources_disabled sources_enabled
+	    repos
+            COMPREPLY=( $(compgen -W "${repos_disabled}" -- "${command}"))
+	    unset repos_disabled
             return 0;;
 	--disable|-d)
-	    sources
-	    COMPREPLY=( $(compgen -W "${sources_enabled}" -- "${command}"))
-	unset sources_disabled sources_enabled
+	    repos
+	    COMPREPLY=( $(compgen -W "${repos_enabled}" -- "${command}"))
+	    unset repos_enabled
             return 0;;
 	--src|-s|--show-source|-sh|--remove|-r)
-	    COMPREPLY=( $(compgen -W "${sources}" -- "${command}"))
+	    COMPREPLY=( $(compgen -W "${repos}" -- "${command}"))
             return 0;;
         --help|-h|--list|-l|--add|-a|--add-launchpad|-alp) ## These don't return anything
             return 0;;
@@ -54,5 +55,4 @@ _aptsources ()
     fi
 }
 
-sources
 complete -F _aptsources aptsources
