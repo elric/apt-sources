@@ -1,10 +1,10 @@
 ##  Bash comletion file for aptsources
 repos () 
 {	
-    local repo repos
-    repos=$( ls -o -g /etc/apt/sources.list.d/| grep '.list$' | awk '{print $7}' | sed 's/.list/\ /g' )
+    local repo
+    all_repos=$( ls -o -g /etc/apt/sources.list.d/| grep '.list$' | awk '{print $7}' | sed 's/.list/\ /g' )
 
-    for repo in $repos ; do
+    for repo in $all_repos ; do
         grep '^ *deb' /etc/apt/sources.list.d/"$repo".list >> /dev/null
 
         if [ $? == 0 ] ; then
@@ -32,17 +32,18 @@ _aptsources ()
 
     case "${COMP_WORDS[1]}" in
 	--enable|-e)
-	    repos
+            repos
             COMPREPLY=( $(compgen -W "${repos_disabled}" -- "${command}"))
-	    unset repos_disabled
+            unset repos_enabled repos_disabled
             return 0;;
 	--disable|-d)
-	    repos
+            repos
 	    COMPREPLY=( $(compgen -W "${repos_enabled}" -- "${command}"))
-	    unset repos_enabled
+            unset repos_enabled repos_disabled
             return 0;;
 	--src|-s|--show-source|-sh|--remove|-r)
-	    COMPREPLY=( $(compgen -W "${repos}" -- "${command}"))
+            repos
+	    COMPREPLY=( $(compgen -W "${all_repos}" -- "${command}"))
             return 0;;
         --help|-h|--list|-l|--add|-a|--add-launchpad|-alp) ## These don't return anything
             return 0;;
