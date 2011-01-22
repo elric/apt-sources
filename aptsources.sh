@@ -198,7 +198,7 @@ list_repos () {
         fi
     done
 
-    echo -e "\033[1mEnabled:\033[0m$sources_enabled\n\033[1mDisabled:\033[0m$sources_disabled"
+    echo -e "\033[1mEnabled:\033[0m$repos_enabled\n\033[1mDisabled:\033[0m$repos_disabled"
 }
 
 show_repos () {
