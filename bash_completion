@@ -2,10 +2,10 @@
 repos () 
 {	
     local repo
-    all_repos=$( ls -o -g /etc/apt/sources.list.d/| grep '.list$' | awk '{print $7}' | sed 's/.list/\ /g' )
+    all_repos=$( command ls -o -g /etc/apt/sources.list.d/| grep '.list$' | awk '{print $7}' | sed 's/.list/\ /g' )
 
     for repo in $all_repos ; do
-        grep '^ *deb' /etc/apt/sources.list.d/"$repo".list >> /dev/null
+        command grep '^ *deb' /etc/apt/sources.list.d/"$repo".list >> /dev/null
 
         if [ $? == 0 ] ; then
             repos_enabled="$repos_enabled $repo";    # holds files with uncommented 
@@ -18,10 +18,10 @@ repos ()
 
 _aptsources ()
 {
-    local command opts
+    local cur opts
     COMPREPLY=()
 
-    command="${COMP_WORDS[COMP_CWORD]}" # User input
+    cur="${COMP_WORDS[COMP_CWORD]}" # User input
     
     # Options to show
 
@@ -33,17 +33,17 @@ _aptsources ()
     case "${COMP_WORDS[1]}" in
 	--enable|-e)
             repos
-            COMPREPLY=( $(compgen -W "${repos_disabled}" -- "${command}"))
+            COMPREPLY=( $(compgen -W "${repos_disabled}" -- "${cur}"))
             unset repos_enabled repos_disabled
             return 0;;
 	--disable|-d)
             repos
-	    COMPREPLY=( $(compgen -W "${repos_enabled}" -- "${command}"))
+	    COMPREPLY=( $(compgen -W "${repos_enabled}" -- "${cur}"))
             unset repos_enabled repos_disabled
             return 0;;
 	--src|-s|--show-source|-sh|--remove|-r)
             repos
-	    COMPREPLY=( $(compgen -W "${all_repos}" -- "${command}"))
+	    COMPREPLY=( $(compgen -W "${all_repos}" -- "${cur}"))
             return 0;;
         --help|-h|--list|-l|--add|-a|--add-launchpad|-alp) ## These don't return anything
             return 0;;
@@ -51,7 +51,7 @@ _aptsources ()
     # If no option is specified show all options
 
     if [[ ${command} = * ]]; then
-        COMPREPLY=( $( compgen -W "${opts}" -- "${command}" ) )
+        COMPREPLY=( $( compgen -W "${opts}" -- "${cur}" ) )
         return 0
     fi
 }

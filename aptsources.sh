@@ -86,7 +86,7 @@ enable_bin_repo () {
     local repo
     for repo in $repos
 	do
-	sed -i -e 's/#* *deb \|#deb /deb /g' /etc/apt/sources.list.d/"$repo".list;
+	command sed -i -e 's/#* *deb \|#deb /deb /g' /etc/apt/sources.list.d/"$repo".list;
     done
     echo -e "\033[1mEnabled\033[0m:$repos"
 }
@@ -96,7 +96,7 @@ enable_binsrc_repo () {
     local repo
     for repo in $repos
 	do
-	sed -i -e 's/#* *deb\|#deb/deb/g' /etc/apt/sources.list.d/"$repo".list;
+	command sed -i -e 's/#* *deb\|#deb/deb/g' /etc/apt/sources.list.d/"$repo".list;
     done
     echo -e "\033[1mEnabled\033[0m:$repos"
 }
@@ -108,7 +108,7 @@ disable_repo () {
     local repo
     for repo in $repos
         do
-        sed -i -e 's/^deb\|^ *deb/# deb/g' /etc/apt/sources.list.d/"$repo".list;
+        command sed -i -e 's/^deb\|^ *deb/# deb/g' /etc/apt/sources.list.d/"$repo".list;
     done
     echo -e "\033[1mDisabled\033[0m:$repos"
 }
@@ -173,7 +173,7 @@ remove_repo () {
 
     for repo in $repos
         do
-        rm -i /etc/apt/sources.list.d/"$repo".list;
+        command rm -i /etc/apt/sources.list.d/"$repo".list;
     done
 
     echo -e "\033[1mDeleted\033[0m:$repos"
@@ -188,7 +188,7 @@ list_repos () {
     repos=$(ls -o -g /etc/apt/sources.list.d/| grep '.list$' | awk '{print $7}' | sed 's/.list/\ /g')
 
     for repo in $repos ; do
-        grep '^ *deb' /etc/apt/sources.list.d/"$repo".list >> /dev/null
+        command grep '^ *deb' /etc/apt/sources.list.d/"$repo".list >> /dev/null
 
         if [ $? == 0 ] ; then
             repos_enabled="$repos_enabled $repo";    # holds files with uncommented 
@@ -204,7 +204,7 @@ list_repos () {
 show_repos () {
     local repo
     for repo in $repos; do
-        cat /etc/apt/sources.list.d/"$repo".list
+        command cat /etc/apt/sources.list.d/"$repo".list
     done
 }
 
@@ -212,7 +212,7 @@ show_repos () {
 # and "case $1 in" during the process. It also comments... itself (string below)
 
 autoinstall () {
-    cat $0 | sed 's/-i|--autoinstall/#-i|--autoinstall/' | sed '/install script system/s%^%#%' > /tmp/aptsources
+    command cat $0 | sed 's/-i|--autoinstall/#-i|--autoinstall/' | sed '/install script system/s%^%#%' > /tmp/aptsources
     install -o root -m 755 -g staff -D  /tmp/aptsources /usr/local/bin/aptsources
     rm /tmp/aptsources
     echo "Done"
