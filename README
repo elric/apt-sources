@@ -6,5 +6,5 @@ source entries in files under 'sources.list.d/'.
 It can enable, disable, add repos and more functions. It also provides a bash_completion
 file.
 
-The script is self-instalable, but the file 'bash_completion' must be manually
-copied to '/etc/bash_completion.d/aptsources'.
+The script is self-instalable, as well as the bash_completion file, contained
+in the script.
