@@ -39,6 +39,7 @@ echo '-a,  --add         add repository';
 echo '-r,  --remove      remove repository';
 echo '-l,  --list        list repositories and status';
 echo '-i,  --autoinstall install script system-wide to /usr/local/bin/';
+echo '                   and bash completion file to /etc/bash_completion';
 echo '-h,  --help        this message';
 echo '';
 echo 'Launchpad repositories only';
@@ -185,7 +186,7 @@ remove_repo () {
 list_repos () {
     local repos repo repos_enabled repos_disabled
 
-    repos=$(ls -o -g /etc/apt/sources.list.d/| grep '.list$' | awk '{print $7}' | sed 's/.list/\ /g')
+    repos=$(ls -o -g /etc/apt/sources.list.d/| command grep '.list$' | command awk '{print $7}' | command sed 's/.list/\ /g')
 
     for repo in $repos ; do
         command grep '^ *deb' /etc/apt/sources.list.d/"$repo".list >> /dev/null
@@ -212,9 +213,16 @@ show_repos () {
 # and "case $1 in" during the process. It also comments... itself (string below)
 
 autoinstall () {
-    command cat $0 | sed 's/-i|--autoinstall/#-i|--autoinstall/' | sed '/install script system/s%^%#%' > /tmp/aptsources
+    ## Install aptsources script
+    command cat $0 | sed '/^##  Bash/,/^##  Bash/d' | sed 's/-i|--autoinstall/#-i|--autoinstall/' | sed '/install script system/s%^%#%' > /tmp/aptsources
     install -o root -m 755 -g staff -D  /tmp/aptsources /usr/local/bin/aptsources
     rm /tmp/aptsources
+
+    ##Install bash completion
+    command cat $0 | sed -n '/^##  Bash/,/^##  Bash/p' | sed 's/^#//' > /tmp/aptsources_bashcompletion
+    install -o root -m 644 -g root -D /tmp/aptsources_bashcompletion /etc/bash_completion.d/aptsources
+    rm /tmp/aptsources_bashcompletion
+
     echo "Done"
 }
 
@@ -227,6 +235,67 @@ check_root () {
     fi                                         # this exit unless something goes wrong.
     
 }                                                                     
+
+##  Bash completion file for aptsources
+#repos () 
+#{	
+#    local repo
+#    all_repos=$( command ls -o -g /etc/apt/sources.list.d/| grep '.list$' | awk '{print $7}' | sed 's/.list/\ /g' )
+#
+#    for repo in $all_repos ; do
+#        command grep '^ *deb' /etc/apt/sources.list.d/"$repo".list >> /dev/null
+#
+#        if [ $? == 0 ] ; then
+#            repos_enabled="$repos_enabled $repo";    # holds files with uncommented 
+#                                                         # lines
+#        else
+#            repos_disabled="$repos_disabled $repo";  # the opposite
+#        fi
+#    done
+#}
+#
+#_aptsources ()
+#{
+#    local cur opts
+#    COMPREPLY=()
+#
+#    cur="${COMP_WORDS[COMP_CWORD]}" # User input
+#    
+#    # Options to show
+#
+#    opts="--enable --disable --src --show-source --add --remove --add-launchpad --help --list"
+#    
+#    ## If the introduced command is one of the following, keep on completing
+#    ## sources
+#
+#    case "${COMP_WORDS[1]}" in
+#	--enable|-e)
+#            repos
+#            COMPREPLY=( $(compgen -W "${repos_disabled}" -- "${cur}"))
+#            unset repos_enabled repos_disabled
+#            return 0;;
+#	--disable|-d)
+#            repos
+#	    COMPREPLY=( $(compgen -W "${repos_enabled}" -- "${cur}"))
+#            unset repos_enabled repos_disabled
+#            return 0;;
+#	--src|-s|--show-source|-sh|--remove|-r)
+#            repos
+#	    COMPREPLY=( $(compgen -W "${all_repos}" -- "${cur}"))
+#            return 0;;
+#        --help|-h|--list|-l|--add|-a|--add-launchpad|-alp) ## These don't return anything
+#            return 0;;
+#    esac
+#    # If no option is specified show all options
+#
+#    if [[ ${command} = * ]]; then
+#        COMPREPLY=( $( compgen -W "${opts}" -- "${cur}" ) )
+#        return 0
+#    fi
+#}
+#
+#complete -F _aptsources aptsources
+##  Bash completion file for aptsources
 
 #-------------------------------------------------------------------------------
 #  "Initialization" starts here
@@ -248,7 +317,8 @@ else
         -s|--src)           check_root;check_repos "$@";enable_binsrc_repo;;
         -d|--disable)       check_root;check_repos "$@";disable_repo;;
         -a|--add)           check_root;add_repo "$@";;
-        -alp|--add-launchpad)    check_root;add_lp_repo "$@";;
+        -alp|--add-launchpad)
+                            check_root;add_lp_repo "$@";;
         -r|--remove)        check_root;check_repos "$@";remove_repo;;
         -sh|--show-source)  check_repos "$@";show_repos;;
         -i|--autoinstall)   check_root;autoinstall;;

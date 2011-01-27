@@ -6,9 +6,9 @@ check proper bash script logging | output
 -lp: apt-get update is used to get the key, and another upd is 
 necessary. so use wget from the other script 
 autoinstall bash autocompletion
-unify variables 'source, file, repo etc...., file, repo etc....''
 
 check_lines doesn't work with -d because grep doesn't tell if one or both
 lines are commented. Therefore, -d fails because a repo counts as
 $sources_enabled when only the deb line is uncommented.  I need 3 states,
 enabledbin, enabledsrc and disabled, or sthg like that.
+backup sources.list.d/
