@@ -31,7 +31,7 @@ echo '';
 echo 'Only one option can be specified at a time.';
 echo 'Omit '.list' extension in filename/repository name.';
 echo '';
-echo '-e,  --enable      enable repository, only 'deb' line';
+echo '-e,  --enable      enable repository, only deb line';
 echo '-s,  --src         enable repository, 'deb-src' and 'deb' lines';
 echo '-d,  --disable     disable repository';
 echo '-sh, --show-source show contents in source file';
@@ -40,12 +40,14 @@ echo '-r,  --remove      remove repository';
 echo '-l,  --list        list repositories and status';
 echo '-i,  --autoinstall install script system-wide to /usr/local/bin/';
 echo '                   and bash completion file to /etc/bash_completion';
-echo '--backup           backup 'sources.list' and files under 'sources.list.d/'';
-echo '--restore          restore sources files from backup file';
-echo '-h,  --help        this message';
 echo '';
 echo 'Launchpad repositories only';
 echo '-alp, --add-launchpad      add launchpad repository and fetch key';
+echo '';
+echo '--backup           backup 'sources.list' and files under 'sources.list.d/'';
+echo '--restore          restore sources files from backup file';
+echo '';
+echo '-h,  --help        this message';
 echo '';
 exit 1
 }
@@ -225,7 +227,7 @@ autoinstall () {
     install -o root -m 644 -g root -D /tmp/aptsources_bashcompletion /etc/bash_completion.d/aptsources
     rm /tmp/aptsources_bashcompletion
 
-    echo "\033[1mDone\033[0m"
+    echo -e "\033[1mDone\033[0m"
 }
 
 ##### Backup/Restore functions #######
@@ -263,7 +265,7 @@ restore_repos () {
 
     if [[ $REPLY == "y" ]] ; then
         tar zxvf $1 -C /etc/apt/                ## extract files
-        echo "\033[1mDone\033[0m"
+        echo -e "\033[1mDone\033[0m"
     else
         exit 1
     fi
@@ -308,7 +310,7 @@ check_root () {
 #    
 #    # Options to show
 #
-#    opts="--enable --disable --src --show-source --add --remove --add-launchpad --help --list"
+#    opts="--enable --disable --src --show-source --add --remove --add-launchpad --help --list --backup --restore"
 #    
 #    ## If the introduced command is one of the following, keep on completing
 #    ## sources
@@ -328,7 +330,7 @@ check_root () {
 #            repos
 #	    COMPREPLY=( $(compgen -W "${all_repos}" -- "${cur}"))
 #            return 0;;
-#        --help|-h|--list|-l|--add|-a|--add-launchpad|-alp) ## These don't return anything
+#        --help|-h|--list|-l|--add|-a|--add-launchpad|-alp|--backup) ## These don't return anything
 #            return 0;;
 #    esac
 #    # If no option is specified show all options
