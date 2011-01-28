@@ -40,6 +40,8 @@ echo '-r,  --remove      remove repository';
 echo '-l,  --list        list repositories and status';
 echo '-i,  --autoinstall install script system-wide to /usr/local/bin/';
 echo '                   and bash completion file to /etc/bash_completion';
+echo '--backup           backup 'sources.list' and files under 'sources.list.d/'';
+echo '--restore          restore sources files from backup file';
 echo '-h,  --help        this message';
 echo '';
 echo 'Launchpad repositories only';
@@ -223,8 +225,51 @@ autoinstall () {
     install -o root -m 644 -g root -D /tmp/aptsources_bashcompletion /etc/bash_completion.d/aptsources
     rm /tmp/aptsources_bashcompletion
 
-    echo "Done"
+    echo "\033[1mDone\033[0m"
 }
+
+##### Backup/Restore functions #######
+
+backup_repos () {
+
+    date_string=$(date +%F)
+
+    ### Copy files and create tar.gz
+
+    mkdir -p /tmp/.repos_backup/sources.list.d/
+    command cp -r /etc/apt/sources.list.d/ /tmp/.repos_backup/
+    command cp  /etc/apt/sources.list /tmp/.repos_backup
+
+    cd /tmp/.repos_backup
+    command tar czf sources.backup.$date_string.tar.gz *
+
+    # Copy to .
+    cp /tmp/.repos_backup/sources.backup.$date_string.tar.gz $OLDPWD
+    cd $OLDPWD
+    rm -fr /tmp/.repos_backup
+    echo "Backup file created as 'sources.backup.$date_string.tar.gz'."
+}
+
+restore_repos () {
+    shift
+
+    if [ ! -n "$1"  ] ; then                    # check file is given
+        echo "No file has been specified"
+        exit 1
+    fi
+
+    echo -e "This action will overwrite your actual 'sources.list' and files under\n'sources.list.d/' with identical filenames to the ones contained in the backup\nfile."
+    read -n1 -p "Continue? [y/n]"
+
+    if [[ $REPLY == "y" ]] ; then
+        tar zxvf $1 -C /etc/apt/                ## extract files
+        echo "\033[1mDone\033[0m"
+    else
+        exit 1
+    fi
+}
+
+######################################
 
 check_root () {
 
@@ -323,6 +368,8 @@ else
         -sh|--show-source)  check_repos "$@";show_repos;;
         -i|--autoinstall)   check_root;autoinstall;;
         -l|--list)          list_repos;;
+        --backup)           backup_repos;;
+        --restore)          check_root;restore_repos "$@";;
         -h|--help)          help_message;;
         -*|--*)             echo "The option '$1' doesn't exist";;
     esac
