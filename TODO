@@ -10,4 +10,3 @@ check_lines doesn't work with -d because grep doesn't tell if one or both
 lines are commented. Therefore, -d fails because a repo counts as
 $sources_enabled when only the deb line is uncommented.  I need 3 states,
 enabledbin, enabledsrc and disabled, or sthg like that.
-backup sources.list.d/
