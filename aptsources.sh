@@ -22,32 +22,32 @@
 #-------------------------------------------------------------------------------
 
 help_message () { 
-echo 'aptsources is a script to enable, disable and add external repositories';
-echo 'under `/etc/apt/sources.list.d/`';
-echo '';
-echo 'Usage: ./aptsources.sh [-e -s -d -sh -a -r] [repository filename]';
-echo '       -alp [ppa:user/ppa-name ubuntu-codename] -l -h;'
-echo '';
-echo 'Only one option can be specified at a time.';
-echo 'Omit '.list' extension in filename/repository name.';
-echo '';
-echo '-e,  --enable      enable repository, only deb line';
-echo '-s,  --src         enable repository, 'deb-src' and 'deb' lines';
-echo '-d,  --disable     disable repository';
-echo '-sh, --show-source show contents in source file';
-echo '-a,  --add         add repository';
-echo '-r,  --remove      remove repository';
-echo '-l,  --list        list repositories and status';
-echo -e '-i,  --autoinstall install script system-wide to /usr/local/bin/\nand bash completion file to /etc/bash_completion.d/';
-echo '';
-echo 'Launchpad repositories only';
-echo '-alp, --add-launchpad      add launchpad repository and fetch key';
-echo '';
-echo '--backup           backup 'sources.list' and files under 'sources.list.d/'';
-echo '--restore          restore sources files from backup file';
-echo '';
-echo '-h,  --help        this message';
-echo '';
+echo "aptsources is a script to enable, disable and add external repositories";
+echo "under `/etc/apt/sources.list.d/`";
+echo "";
+echo "Usage: ./aptsources.sh [-e -s -d -sh -a -r] [repository filename]";
+echo "       -alp [ppa:user/ppa-name ubuntu-codename] -l -h";
+echo "";
+echo "Only one option can be specified at a time.";
+echo "Omit '.list' extension in filename/repository name.";
+echo "";
+echo "-e,  --enable      enable repository, only 'deb' line";
+echo "-s,  --src         enable repository, 'deb-src' and 'deb' lines";
+echo "-d,  --disable     disable repository";
+echo "-sh, --show-source show contents in source file";
+echo "-a,  --add         add repository";
+echo "-r,  --remove      remove repository";
+echo "-l,  --list        list repositories and status";
+echo -e "-i,  --autoinstall install script system-wide to /usr/local/bin/\nand bash completion file to /etc/bash_completion.d/";
+echo "";
+echo "Launchpad repositories only";
+echo "-alp, --add-launchpad      add launchpad repository and fetch key";
+echo "";
+echo "--backup           backup 'sources.list' and files under 'sources.list.d/'";
+echo "--restore          restore sources files from backup file";
+echo "";
+echo "-h,  --help        this message";
+echo "";
 exit 1
 }
 
