@@ -1,7 +1,6 @@
 TODO: Only one argument a time is allowed
 check if already enabled or disabled
 give option to apt-get update after command
-autoinstall's sed can be nicer
 check proper bash script logging | output
 -lp: apt-get update is used to get the key, and another upd is 
 necessary. so use wget from the other script 

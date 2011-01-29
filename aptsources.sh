@@ -38,8 +38,7 @@ echo '-sh, --show-source show contents in source file';
 echo '-a,  --add         add repository';
 echo '-r,  --remove      remove repository';
 echo '-l,  --list        list repositories and status';
-echo '-i,  --autoinstall install script system-wide to /usr/local/bin/';
-echo '                   and bash completion file to /etc/bash_completion';
+echo -e '-i,  --autoinstall install script system-wide to /usr/local/bin/\nand bash completion file to /etc/bash_completion.d/';
 echo '';
 echo 'Launchpad repositories only';
 echo '-alp, --add-launchpad      add launchpad repository and fetch key';
@@ -213,23 +212,6 @@ show_repos () {
     done
 }
 
-### Autoinstall, + or - copy itself to /usr/local/bin. Sed comments lines in help() 
-# and "case $1 in" during the process. It also comments... itself (string below)
-
-autoinstall () {
-    ## Install aptsources script
-    command cat $0 | sed '/^##  Bash/,/^##  Bash/d' | sed 's/-i|--autoinstall/#-i|--autoinstall/' | sed '/install script system/s%^%#%' > /tmp/aptsources
-    install -o root -m 755 -g staff -D  /tmp/aptsources /usr/local/bin/aptsources
-    rm /tmp/aptsources
-
-    ##Install bash completion
-    command cat $0 | sed -n '/^##  Bash/,/^##  Bash/p' | sed 's/^#//' > /tmp/aptsources_bashcompletion
-    install -o root -m 644 -g root -D /tmp/aptsources_bashcompletion /etc/bash_completion.d/aptsources
-    rm /tmp/aptsources_bashcompletion
-
-    echo -e "\033[1mDone\033[0m"
-}
-
 ##### Backup/Restore functions #######
 
 backup_repos () {
@@ -282,6 +264,26 @@ check_root () {
     fi                                         # this exit unless something goes wrong.
     
 }                                                                     
+
+##  Autoinstall
+# Installs the script under /usr/local/bin, deleting autoinstall() and Bash
+# completion section
+
+autoinstall () {
+
+    ## Install aptsources script
+    command cat $0 | sed '/^##  Bash/,/^##  Bash/d' | sed '/^##  Autoinstall/,/^##  Autoinstall/d' | sed '/--autoinstall/d' > /tmp/aptsources
+    install -o root -m 755 -g staff -D  /tmp/aptsources /usr/local/bin/aptsources
+    rm /tmp/aptsources
+
+    ## Install bash completion
+    command cat $0 | sed -n '/^##  Bash/,/^##  Bash/p' | sed 's/^#//' > /tmp/aptsources_bashcompletion
+    install -o root -m 644 -g root -D /tmp/aptsources_bashcompletion /etc/bash_completion.d/aptsources
+    rm /tmp/aptsources_bashcompletion
+
+    echo -e "\033[1mDone\033[0m"
+}
+##  Autoinstall
 
 ##  Bash completion file for aptsources
 #repos () 
