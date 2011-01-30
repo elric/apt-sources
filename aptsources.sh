@@ -29,7 +29,7 @@ echo "Usage: ./aptsources.sh [-e -s -d -sh -a -r] [repository filename]";
 echo "       -alp [ppa:user/ppa-name ubuntu-codename] -l -h";
 echo "";
 echo "Only one option can be specified at a time.";
-echo "Omit '.list' extension in filename/repository name.";
+echo "Omit extension '.list' in filename/repository name.";
 echo "";
 echo "-e,  --enable      enable repository, only 'deb' line";
 echo "-s,  --src         enable repository, 'deb-src' and 'deb' lines";
@@ -55,7 +55,9 @@ exit 1
 # files don't exist
 
 check_repos () {
-    shift                                       # move $@ to the left
+    shift                                       # Skip option name, leave
+                                                # repos
+
     if [ ! -n "$1"  ] ; then                    # check args are given
         echo "No repositories have been specified"
         exit 1
@@ -123,7 +125,7 @@ disable_repo () {
 # just spawns an editor...
 
 add_repo () {
-    shift                     ##  we take $@ and shift it to get the reponame (the arg)
+    shift
     if [ ! -n "$1"  ] ; then
         echo "No filename or repository name specified"
         exit 1
